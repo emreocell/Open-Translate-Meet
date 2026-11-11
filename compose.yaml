@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      MEET_PRIVATE_DIR: /var/lib/meet
+    volumes:
+      - meeting-private:/var/lib/meet
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+      - /var/run/apache2
+      - /var/lock/apache2
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "php", "bin/check-config.php"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+volumes:
+  meeting-private:

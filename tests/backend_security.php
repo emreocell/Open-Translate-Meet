@@ -1,0 +1,102 @@
+<?php
+declare(strict_types=1);
+/** No external services, production configuration or credentials are used. */
+$testRoot = sys_get_temp_dir() . '/meet-security-' . bin2hex(random_bytes(8));
+mkdir($testRoot, 0700);
+putenv('MEET_PRIVATE_DIR=' . $testRoot);
+putenv('APP_URL=http://localhost:8080');
+putenv('APP_SECRET=' . str_repeat('test-application-secret-', 3));
+putenv('LIVEKIT_API_SECRET=' . str_repeat('test-media-secret-', 3));
+putenv('TRUSTED_PROXIES=192.0.2.0/24');
+putenv('TRUSTED_CLIENT_IP_HEADER=HTTP_X_REAL_IP');
+define('MEET_TEST_MODE', true);
+require dirname(__DIR__) . '/api/_lib.php';
+require dirname(__DIR__) . '/api/_admission.php';
+$passed = 0;
+function check(bool $condition, string $label): void { global $passed; if (!$condition) throw new RuntimeException('FAIL: ' . $label); $passed++; }
+function rejects(callable $fn, string $error, string $label): void {
+  try { $fn(); } catch (MeetHttpError $e) { check($e->error === $error, $label); return; }
+  check(false, $label);
+}
+try {
+  $secret = app_secret(); $now = time();
+  $valid = jwt_sign(['exp' => $now + 60, 'nbf' => $now - 1], $secret);
+  check(jwt_verify($valid, $secret) !== null, 'valid JWT');
+  check(jwt_verify(jwt_sign(['exp' => $now], $secret), $secret) === null, 'expiry is exclusive');
+  check(jwt_verify(jwt_sign(['exp' => $now + 60, 'nbf' => $now + 100], $secret), $secret) === null, 'future JWT rejected');
+  check(jwt_verify(jwt_sign(['exp' => (string)($now + 60)], $secret), $secret) === null, 'string expiry rejected');
+  check(jwt_verify(jwt_sign(['value' => 1], $secret), $secret) === null, 'expiry required');
+  check(jwt_verify($valid, str_repeat('other', 10)) === null, 'wrong key');
+  $h = b64u('{"alg":"none","typ":"JWT"}'); $p = b64u(json_encode(['exp' => $now + 60]));
+  $forged = "$h.$p." . b64u(hash_hmac('sha256', "$h.$p", $secret, true));
+  check(jwt_verify($forged, $secret) === null, 'algorithm pinning');
+  check(jwt_verify($valid . 'x', $secret) === null, 'signature mutation');
+  rejects(static fn() => room_create(['max' => 999]), 'bad_limit', 'invalid capacity');
+  rejects(static fn() => room_create(['expiresAt' => time() - 1]), 'bad_schedule', 'expired creation');
+  $r = room_create(['title' => "Meeting\nTitle", 'max' => 2, 'waitingRoom' => true, 'password' => 'test password']);
+  check($r['title'] === 'Meeting Title', 'normalized title');
+  check(password_verify('test password', $r['passHash']), 'password hashing');
+  $id = $r['id']; $links = room_links($id, $r['title']);
+  check(str_contains($links['hostLink'], '#h=') && !str_contains($links['hostLink'], '&h='), 'host secret in fragment');
+  check(!str_contains($links['link'], '#h=') && !str_contains($links['link'], '&h='), 'invite never host authority');
+  parse_str((string)parse_url($links['link'], PHP_URL_QUERY), $query);
+  check(room_from_link($query['r']) === $id, 'valid registered room invite');
+  check(room_from_link(str_repeat('f', 10) . '.' . str_repeat('0', 24)) === null, 'unknown room denied');
+  check(host_ok($id, host_sig($id)), 'host capability');
+  check(!host_ok($id, str_repeat('0', 64)), 'invalid host capability');
+  $old = $query['r'];
+  room_reg_edit($id, static function (array &$r): void { $r['linkVersion'] = bin2hex(random_bytes(12)); });
+  check(room_from_link($old) === null, 'rotated link denied');
+  $who = str_repeat('a', 12); $did = str_repeat('b', 32);
+  room_reg_edit($id, static function (array &$r) use ($who, $did): void {
+    $r['sessions'][$who] = ['sid' => str_repeat('c', 32), 'name' => 'Alice', 'host' => true, 'speak' => 'en', 'hear' => 'tr', 'did' => $did, 'expires' => time() + 3600];
+  });
+  $r = room_reg_get($id); $ticket = issue_ticket($r, $who); $claims = ticket_claims($ticket);
+  check($claims !== null && $claims['host'] && $claims['name'] === 'Alice', 'canonical app ticket');
+  check(ticket_claims(jwt_sign(['iss' => 'media', 'sub' => $who, 'exp' => time() + 60, 'video' => ['room' => $id, 'roomAdmin' => true]], config_string('LIVEKIT_API_SECRET'))) === null, 'media JWT cannot authenticate app');
+  $wait = waiting_token($id, str_repeat('d', 24), $did, time() + 600);
+  check(waiting_claims($wait, $id, $did) !== null, 'waiting JWT purpose');
+  check(waiting_claims($wait, $id, str_repeat('e', 32)) === null, 'waiting ticket bound to device');
+  check(ticket_claims($wait) === null, 'waiting ticket has no room membership');
+  room_reg_edit($id, static function (array &$r) use ($who): void { $r['sessions'][$who]['host'] = false; });
+  check(!ticket_claims($ticket)['host'], 'role demotion takes effect on existing ticket');
+  mod_edit($id, static function (array &$m) use ($did): void { $m['bans'][] = ['did' => $did, 'until' => 0]; });
+  check(ticket_claims($ticket) === null, 'ban revokes app access');
+  check(mod_ban(mod_read($id), str_repeat('f', 32), 'same-address') === null, 'no collateral NAT ban');
+  check(!mod_match(['did' => $did, 'ip' => 'same'], str_repeat('f', 32), 'same'), 'IP does not authorize moderation match');
+  mod_edit($id, static function (array &$m): void { $m['bans'] = []; });
+  room_reg_edit($id, static function (array &$r) use ($who): void { $r['sessions'][$who]['revoked'] = true; });
+  check(ticket_claims($ticket) === null, 'revoked app session');
+  room_reg_edit($id, static function (array &$r) use ($who): void { unset($r['sessions'][$who]['revoked']); $r['status'] = 'ended'; });
+  check(ticket_claims($ticket) === null, 'ended room denies app ticket');
+  rejects(static fn() => room_require_open($id), 'room_closed', 'ended room denied');
+  room_reg_edit($id, static function (array &$r): void { $r['status'] = 'active'; $r['expiresAt'] = time() - 1; });
+  rejects(static fn() => room_require_open($id), 'room_closed', 'expired room denied');
+  $oldInvite = $id . '.' . room_sig($id); unlink(ROOMS_DIR . '/' . $id . '.json');
+  check(room_from_link($oldInvite) === null, 'purged registry cannot revive old invite');
+  $mod = ['locks' => [['did' => $did, 'mic' => true]], 'bans' => [], 'seen' => []];
+  $sources = mod_sources($mod, $did);
+  check(!in_array('microphone', $sources, true) && !in_array('unknown', $sources, true) && !in_array('screen_share_audio', $sources, true), 'mic lock removes translation/screen audio');
+  check(in_array('camera', $sources, true), 'mic lock preserves camera');
+  $_SERVER['REMOTE_ADDR'] = '198.51.100.5'; $_SERVER['HTTP_X_REAL_IP'] = '203.0.113.9'; $_SERVER['HTTP_CF_CONNECTING_IP'] = '192.0.2.22';
+  check(client_ip() === '198.51.100.5', 'untrusted proxy spoof ignored');
+  $_SERVER['REMOTE_ADDR'] = '192.0.2.7'; check(client_ip() === '203.0.113.9', 'trusted proxy header respected');
+  check(ip_in_network('2001:db8::1', '2001:db8::/32') && !ip_in_network('2001:db9::1', '2001:db8::/32'), 'IPv6 CIDR');
+  $_SERVER['HTTP_ORIGIN'] = 'https://attacker.invalid'; rejects(static fn() => request_origin(), 'origin', 'cross-origin request denied');
+  $_SERVER['HTTP_ORIGIN'] = PUBLIC_ORIGIN; request_origin(); unset($_SERVER['HTTP_ORIGIN']);
+  check(rate('test-bucket', 2, 60) && rate('test-bucket', 2, 60) && !rate('test-bucket', 2, 60), 'rate boundary');
+  $corrupt = PRIV . '/corrupt.json'; file_put_contents($corrupt, '{broken');
+  rejects(static fn() => private_json_read($corrupt), 'storage', 'corrupt state fails closed'); unlink($corrupt);
+  $atomic = PRIV . '/atomic.json'; private_json_write($atomic, ['value' => 1]);
+  check(private_json_read($atomic)['value'] === 1 && (fileperms($atomic) & 0777) === 0600, 'atomic private file');
+  private_dir(PRIV . '/uploads/' . str_repeat('1', 10) . '/' . str_repeat('2', 16) . '.part');
+  private_json_write(PRIV . '/uploads/' . str_repeat('1', 10) . '/' . str_repeat('2', 16) . '.part/meta.json', ['size' => 1000, 'reservedBytes' => 3000]);
+  check(upload_reserved(PRIV . '/uploads') >= 3000, 'partial uploads reserve promised bytes');
+  $counter = PRIV . '/counter.json'; private_json_write($counter, ['value' => 0]); $children = [];
+  $lib = dirname(__DIR__) . '/api/_lib.php';
+  $code = 'define("MEET_TEST_MODE",true); require ' . var_export($lib, true) . '; for($i=0;$i<30;$i++) storage_lock("counter",function(){ $p=PRIV."/counter.json"; $d=private_json_read($p); $d["value"]++; private_json_write($p,$d); });';
+  for ($i = 0; $i < 4; $i++) $children[] = proc_open([PHP_BINARY, '-r', $code], [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => STDERR], $pipes);
+  foreach ($children as $child) check(proc_close($child) === 0, 'concurrent writer exits');
+  check(private_json_read($counter)['value'] === 120, 'concurrent read-modify-write loses no updates');
+  echo "Backend security unit checks passed: $passed\n";
+} finally { rm_tree($testRoot); }

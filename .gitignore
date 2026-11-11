@@ -1,0 +1,15 @@
+# Local secrets - never committed
+.env
+.env.*
+!.env.example
+
+# Installed dependencies and local runtime state
+/vendor/
+/node_modules/
+/meet-private/
+/private/
+/coverage/
+/test-results/
+/playwright-report/
+*.log
+.DS_Store

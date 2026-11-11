@@ -1,0 +1,31 @@
+# Add TLS certificates / listen 443 ssl using your certificate manager.
+# The application supports a domain-root installation, not a subdirectory.
+server {
+    listen 443 ssl;
+    server_name meet.example.org;
+    root /srv/auto-translate-meeting;
+    index index.html index.php;
+    client_max_body_size 6m;
+    autoindex off;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+    add_header X-Frame-Options DENY always;
+    add_header Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; img-src 'self' data: blob: https:; media-src 'self' blob:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    location ~ /\. { deny all; }
+    location ~ ^/(vendor|node_modules|bin|tests|docs|deploy|integrations|design|LICENSES)(/|$) { deny all; }
+    location ~ ^/api/_ { deny all; }
+    location ~ ^/(composer\.(json|lock)|package(-lock)?\.json|env\.template|Dockerfile|compose\.yaml|LICENSE|NOTICE)$ { deny all; }
+    location ~ \.(md|ya?ml)$ { deny all; }
+    location ~ \.php$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param MEET_PRIVATE_DIR /var/lib/auto-translate-meeting;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+        fastcgi_read_timeout 95s;
+    }
+    location / { try_files $uri $uri/ =404; }
+}

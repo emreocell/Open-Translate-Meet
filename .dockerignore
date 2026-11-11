@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+node_modules
+vendor
+meet-private
+private
+tests
+test-results
+playwright-report
+coverage
+*.log

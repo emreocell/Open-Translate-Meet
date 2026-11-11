@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Auto Translate Meeting</title>
+<link rel="icon" type="image/svg+xml" href="assets/brand/mark.svg">
+<script>(function(){var th=null;try{th=localStorage.getItem('wm-theme')}catch(e){}if(th==='blue')th='dark';if(th!=='dark'&&th!=='light')th=(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.dataset.theme=th})()</script>
+<script src="assets/js/branding.js"></script>
+<link rel="stylesheet" href="assets/css/meeting-features.css">
+<link rel="stylesheet" href="assets/css/features.css">
+<link rel="stylesheet" href="assets/css/app.css?v=20"><link rel="stylesheet" href="assets/css/book.css?v=2">
+</head>
+<body>
+<div class="bg"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i><i class="b5"></i></div>
+<div class="grain"></div><div class="vig"></div>
+<div id="audio" class="hide"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="overlay" id="overlay"><div class="box glass"><h2 id="ov-t"></h2><p id="ov-p"></p><button class="go" id="ov-btn" type="button"></button><button class="go ghost hide" id="ov-btn2" type="button"></button></div></div>
+<div class="mgmenu glass" id="mgmenu" role="menu" hidden></div>
+
+<!-- sağ alt: dil + tema -->
+<div class="cluster">
+  <div style="position:relative">
+    <div class="lmenu glass" id="lmenu" role="menu"></div>
+    <div class="grp glass"><button class="lbtn" id="lbtn" type="button" aria-haspopup="menu"><b class="ic" data-i="globe"></b><span id="lcode">TR</span></button></div>
+  </div>
+  <div class="grp glass" role="radiogroup" data-t-title="theme">
+    <button class="tbtn" type="button" role="radio" data-th="dark" data-t-title="theme_dark"><i></i></button>
+    <button class="tbtn" type="button" role="radio" data-th="light" data-t-title="theme_light"><i></i></button>
+  </div>
+</div>
+
+<!-- bağlantı yok -->
+<section id="nolink" class="screen">
+  <div class="home">
+    <!-- sol: toplantı talep takvimi -->
+    <section class="cal glass" data-booking-section hidden aria-labelledby="cal-t">
+      <header class="cal-h">
+        <div class="cal-ttl"><span class="brand"><img class="brand-mark" data-brand-logo src="assets/brand/mark.svg" alt=""><span data-app-name>Auto Translate Meeting</span></span>
+          <h1 id="cal-t" data-bt="b_title"></h1><p class="lead" data-bt="b_lead"></p></div>
+      </header>
+      <div class="cal-body">
+        <div class="cal-month">
+          <div class="cal-nav"><button type="button" class="cnav" id="cprev"><b class="ic" data-i="chev"></b></button><b id="cmonth" aria-live="polite"></b><button type="button" class="cnav" id="cnext"><b class="ic" data-i="chev"></b></button></div>
+          <div class="cal-dow" id="cdow" aria-hidden="true"></div>
+          <div class="cal-grid" id="cgrid" role="grid"></div>
+        </div>
+        <div class="cal-times">
+          <h2 id="ct-day"></h2>
+          <div class="ctimes" id="ctimes" role="listbox"></div>
+          <p class="ct-note" id="ct-note" role="status"></p>
+          <p class="fine ct-tz" id="ct-tz"></p>
+        </div>
+      </div>
+    </section>
+    <!-- sağ: toplantıya giriş -->
+    <div class="side-col">
+      <aside class="join glass" aria-labelledby="join-t">
+        <div class="join-ic"><b class="ic" data-i="cam"></b></div>
+        <h2 id="join-t" data-t="home_title"></h2><p class="lead" data-t="home_lead"></p>
+        <form id="linkform" autocomplete="off" novalidate>
+          <div class="field"><label for="linkin" class="sr" data-t="link_label"></label><input id="linkin" class="input" data-t-ph="link_ph" spellcheck="false" autocapitalize="off" autocorrect="off"></div>
+          <button class="go" type="submit"><span data-t="link_go"></span><b class="ic" data-i="arrow"></b></button>
+          <p class="err" id="linkerr"></p>
+        </form>
+      </aside>
+      <section class="contact glass" data-contact-card hidden aria-labelledby="ct-t">
+        <h3 id="ct-t" data-t="contact_t"></h3>
+        <p class="lead" data-t="home_help"></p>
+        <div class="ct-list">
+          <a class="ct-row" data-contact-phone hidden><b class="ct-ic"><b class="ic" data-i="phone"></b></b><span><small data-t="contact_phone"></small><strong dir="ltr"></strong></span></a>
+          <a class="ct-row" data-contact-email hidden><b class="ct-ic"><b class="ic" data-i="mail"></b></b><span><small data-t="contact_mail"></small><strong dir="ltr"></strong></span></a>
+        </div>
+        <a data-contact-website hidden target="_blank" rel="noopener noreferrer"></a>
+      </section>
+      <nav class="site-links" aria-label="Application information"><a href="admin/" data-t="administration">Administration</a><a href="privacy/" data-t="privacy">Privacy</a><a data-source-link href="https://github.com/emreocell/auto-translate-meeting" target="_blank" rel="noopener noreferrer" data-t="source_code">Source code</a></nav>
+    </div>
+  </div>
+</section>
+
+<!-- planlanmış toplantı henüz başlamadı -->
+<section id="waiting" class="screen">
+  <div class="wait glass">
+    <span class="brand"><img class="brand-mark" data-brand-logo src="assets/brand/mark.svg" alt=""><span data-app-name>Auto Translate Meeting</span></span>
+    <div class="wait-ic"><b class="ic" data-i="cal"></b></div>
+    <h1 data-t="wait_t"></h1>
+    <p class="lead" id="wait-when"></p>
+    <small class="wait-cap" data-t="wait_cd"></small>
+    <div class="wait-cd" id="wait-cd" role="timer" aria-live="off"></div>
+    <p class="fine" id="wait-note"></p>
+  </div>
+</section>
+
+<!-- toplantı talebi penceresi -->
+<div class="overlay bkm" id="bkmodal" role="dialog" aria-modal="true" aria-labelledby="bkm-t">
+  <div class="box glass bkbox">
+    <div class="sbox-h"><h2 id="bkm-t" data-bt="b_modal_t"></h2><button type="button" class="sbox-x" id="bkm-close"><b class="ic" data-i="x"></b></button></div>
+    <form id="bkform" class="bkform" autocomplete="on" novalidate>
+      <div class="bk-sel"><div><small data-bt="b_selected"></small><b id="bk-when"></b></div></div>
+      <div class="field"><label for="bk-name" data-bt="b_name"></label><input id="bk-name" class="input" maxlength="80" autocomplete="name" required></div>
+      <div class="field"><label for="bk-email" data-bt="b_email"></label><input id="bk-email" type="email" class="input" maxlength="120" autocomplete="email" inputmode="email" required></div>
+      <div class="bk-two">
+        <div class="field"><label for="bk-company" data-bt="b_company"></label><input id="bk-company" class="input" maxlength="100" autocomplete="organization"></div>
+        <div class="field"><label for="bk-lang" data-bt="b_lang"></label><select id="bk-lang" class="select"></select></div>
+      </div>
+      <div class="field"><label for="bk-note" data-bt="b_note"></label><textarea id="bk-note" class="input bk-note" maxlength="600" rows="2"></textarea></div>
+      <input type="text" id="bk-web" tabindex="-1" autocomplete="off" aria-hidden="true" class="bk-hp">
+      <button class="go" type="submit" id="bk-send"><span data-bt="b_send"></span></button>
+      <p class="err" id="bk-err" role="alert"></p>
+    </form>
+    <div class="bk-done" id="bk-done" hidden>
+      <div class="bk-ok"><b class="ic" data-i="check"></b></div>
+      <h3 data-bt="b_done_t"></h3><p class="lead" id="bk-donewhen"></p><p class="lead" data-bt="b_done_p"></p>
+      <button class="go" type="button" id="bk-ok"><span data-bt="b_close"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GİRİŞ ============ -->
+<section id="lobby" class="screen">
+  <header class="lbar">
+    <div><span class="brand"><img class="brand-mark" data-brand-logo src="assets/brand/mark.svg" alt=""><span data-app-name>Auto Translate Meeting</span></span></div>
+    <div style="display:flex;gap:10px"><span class="chip hide" id="hostchip"><b class="ic" data-i="crown"></b><span data-t="host_entering"></span></span><span class="chip hide-s"><b class="ic" data-i="shield"></b><span data-t="secure"></span></span></div>
+  </header>
+  <main class="lstage">
+    <div class="pv glass" id="pv">
+      <video id="pv-video" autoplay playsinline muted></video>
+      <span class="chip tag"><span class="dot"></span><span data-t="cam_preview"></span></span>
+      <div class="meter"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="avatar" id="pv-avatar">?</div>
+      <div class="ctl glass"><button class="btn on" type="button" id="pv-mic" data-t-title="mic"><b class="ic" data-i="mic"></b></button><button class="btn on" type="button" id="pv-cam" data-t-title="cam"><b class="ic" data-i="cam"></b></button><button class="btn" type="button" id="pv-set" data-t-title="settings"><b class="ic" data-i="gear"></b></button></div>
+    </div>
+    <form class="panel glass" id="joinform" autocomplete="off">
+      <span class="eyebrow"><b class="ic" data-i="wave"></b><span data-t="live_on"></span></span>
+      <h1 data-t="join_title"></h1>
+      <p class="lead" id="room-title" data-t="join_lead"></p>
+      <div class="field"><label for="n" data-t="name"></label><input id="n" class="input" maxlength="40" data-t-ph="name_ph" required></div>
+      <div class="field hide" id="pwfield"><label for="pw" data-t="password"></label><input id="pw" class="input" type="password" maxlength="64" autocomplete="off" data-t-ph="password_ph"></div>
+      <div class="two field">
+        <div><label for="speak" data-t="i_speak"></label><select class="select" id="speak"></select></div>
+        <div><label for="hear" data-t="i_hear"></label><select class="select" id="hear"></select></div>
+      </div>
+      <div class="field"><label data-t="audio_out"></label><div class="seg" id="aout"><button type="button" class="on" data-m="headset"><b class="ic" data-i="head"></b><span data-t="headset"></span></button><button type="button" data-m="speaker"><b class="ic" data-i="spk"></b><span data-t="speaker"></span></button></div></div>
+      <button class="go" type="submit" id="join"><span data-t="join"></span><b class="ic" data-i="arrow"></b></button>
+      <p class="err" id="jerr"></p>
+      <p class="fine"><b class="ic" data-i="shield"></b><span data-t="consent"></span></p>
+    </form>
+  </main>
+</section>
+
+<!-- ============ TOPLANTI ============ -->
+<section id="room" class="screen">
+  <header class="rtop">
+    <div class="l"><div><span class="brand"><img class="brand-mark" data-brand-logo src="assets/brand/mark.svg" alt=""><span data-app-name>Auto Translate Meeting</span></span></div><span class="sep"></span><div class="title"><span id="rname"></span><small data-app-name>Auto Translate Meeting</small></div></div>
+    <div class="r"><span class="chip"><span class="dot"></span><span id="t">0:00</span></span><span class="chip" id="cnt"></span>
+      <div class="hostwrap hide" id="hostwrap"><button class="chip linkbtn" type="button" id="hostbtn"><b class="ic" data-i="crown"></b><span class="hide-s" data-t="host_panel"></span></button>
+        <div class="hostpanel glass" id="hostpanel" hidden>
+          <h3 data-t="host_panel_t"></h3>
+          <div class="hrow"><label for="hlimit" data-t="limit_label"></label><select id="hlimit" class="select"></select></div>
+          <div class="hrow"><span data-t="lock_label"></span><button class="sw" id="hlock" type="button" data-t-title="lock_label"></button></div>
+          <div class="note" id="hcount"></div>
+          <div class="banhead" data-t="bans_t"></div>
+          <div class="banlist" id="banlist"></div>
+          <button type="button" class="hend" id="hend"><b class="ic" data-i="leave"></b><span data-t="end_meeting"></span></button>
+        </div></div>
+      <button class="chip linkbtn" type="button" id="copylink"><b class="ic" data-i="link"></b><span class="hide-s" data-t="copy_link"></span></button>
+      <button class="btn" type="button" id="lay" data-t-title="layout" style="width:38px;height:38px;font-size:18px"><b class="ic" data-i="spot"></b></button></div>
+  </header>
+  <div class="rbody">
+    <div class="tiles" id="tiles"></div>
+    <aside class="side glass" id="side">
+      <div class="sh">
+        <div class="tabs" role="tablist">
+          <button class="tab on" type="button" role="tab" id="tab-tx" data-tab="tx"><span data-t="live_trans"></span></button>
+          <button class="tab" type="button" role="tab" id="tab-chat" data-tab="chat"><span data-t="chat"></span><i class="unread" id="unread" hidden>0</i></button>
+        </div>
+        <span class="chip" id="trchip">—</span>
+        <button class="sclose" type="button" id="sclose" data-t-title="close"><b class="ic" data-i="x"></b></button>
+      </div>
+      <div class="pane on" id="pane-tx">
+        <div class="msgs" id="msgs"></div>
+        <div class="sf">
+          <div class="row" id="trrow"><span data-t="trans_vol"></span><span class="rng"><input type="range" id="trvol" class="sld" min="0" max="100" value="90" data-t-title="trans_vol"><output id="trval" class="trval">90%</output></span></div>
+          <div class="note" id="trnote"></div>
+          <div class="row"><span data-t="mute_orig"></span><button class="sw on" type="button" id="muteorig" data-t-title="mute_orig"></button></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-chat">
+        <div class="chatlist" id="chatlist" aria-live="polite"></div>
+        <div class="uploads" id="uploads"></div>
+        <form class="composer" id="composer" autocomplete="off">
+          <button type="button" class="cbtn" id="attach" data-t-title="attach"><b class="ic" data-i="clip"></b></button>
+          <textarea id="chatin" rows="1" maxlength="2000" data-t-ph="chat_ph" aria-label="Mesaj"></textarea>
+          <button type="submit" class="cbtn send" id="chatsend" data-t-title="send"><b class="ic" data-i="send"></b></button>
+          <input type="file" id="filein" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" hidden>
+        </form>
+      </div>
+    </aside>
+  </div>
+  <div class="caption glass" id="caption"><b id="cap-who"></b><span id="cap-orig"></span><small id="cap-trn"></small></div>
+  <div class="dock glass">
+    <button class="btn on" type="button" id="mic" data-k="mic" data-t-title="mic"><b class="ic" data-i="mic"></b></button>
+    <button class="btn on" type="button" id="cam" data-k="cam" data-t-title="cam"><b class="ic" data-i="cam"></b></button>
+    <button class="btn" type="button" id="share" data-k="share" data-t-title="share"><b class="ic" data-i="screen"></b></button>
+    <span class="vs"></span>
+    <button class="btn on" type="button" id="cap" data-k="panel" data-t-title="panel"><b class="ic" data-i="cc"></b></button>
+    <button class="btn" type="button" id="chatbtn" data-k="chat" data-t-title="chat"><b class="ic" data-i="chat"></b><i class="udot" id="chatdot" hidden></i></button>
+    <button class="btn" type="button" id="setbtn" data-k="settings" data-t-title="settings"><b class="ic" data-i="gear"></b></button>
+    <span class="vs"></span>
+    <button class="leave" type="button" id="leave"><b class="ic" data-i="leave"></b><span data-t="leave"></span></button>
+  </div>
+</section>
+
+<!-- ses ve cihaz ayarları -->
+<div class="overlay sov" id="settings" role="dialog" aria-modal="true" aria-labelledby="st-t">
+  <div class="box glass sbox">
+    <div class="sbox-h"><h2 id="st-t" data-t="settings"></h2><button type="button" class="sbox-x" id="st-close" data-t-title="close"><b class="ic" data-i="x"></b></button></div>
+    <div class="sbox-b">
+      <section>
+        <h3><b class="ic" data-i="mic"></b><span data-t="st_mic"></span></h3>
+        <div class="field"><label for="st-micdev" data-t="st_device"></label><select id="st-micdev" class="select"></select></div>
+        <div class="srow"><span data-t="st_level"></span><div class="lvl" aria-hidden="true"><i id="st-lvl"></i></div></div>
+        <div class="srow"><span data-t="st_in_vol"></span><span class="rng"><input type="range" id="st-gain" class="sld" min="0" max="200" value="100" aria-label="" data-t-title="st_in_vol"><output id="st-gainv">100%</output></span></div>
+        <div class="srow"><span data-t="st_noise"></span><button class="sw on" type="button" id="st-ns" role="switch" data-t-title="st_noise"></button></div>
+        <div class="srow"><span data-t="st_echo"></span><button class="sw on" type="button" id="st-ec" role="switch" data-t-title="st_echo"></button></div>
+        <div class="srow"><span data-t="st_agc"></span><button class="sw on" type="button" id="st-agc" role="switch" data-t-title="st_agc"></button></div>
+        <div class="hint" id="st-micnote"></div>
+      </section>
+      <section>
+        <h3><b class="ic" data-i="spk"></b><span data-t="st_spk"></span></h3>
+        <div class="field" id="st-spkfield"><label for="st-spkdev" data-t="st_device"></label><select id="st-spkdev" class="select"></select></div>
+        <div class="srow"><span data-t="st_out_vol"></span><span class="rng"><input type="range" id="st-master" class="sld" min="0" max="100" value="100" data-t-title="st_out_vol"><output id="st-masterv">100%</output></span></div>
+        <div class="srow"><span data-t="st_test_t"></span><button type="button" class="gh" id="st-test" data-t="st_test"></button></div>
+      </section>
+      <section>
+        <h3><b class="ic" data-i="cam"></b><span data-t="st_cam"></span></h3>
+        <div class="field"><label for="st-camdev" data-t="st_device"></label><select id="st-camdev" class="select"></select></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" hidden><button class="lbx-close" type="button" id="lbx-close" data-t-title="close"><b class="ic" data-i="x"></b></button><img id="lbx-img" alt=""></div>
+
+<script src="assets/js/livekit-client.umd.js"></script>
+<script src="assets/js/select.js?v=1"></script>
+<script src="assets/js/home.js?v=1"></script>
+<script src="assets/js/meeting-core.js"></script>
+<script src="assets/js/translate.js?v=5"></script>
+<script src="assets/js/chat.js?v=2"></script>
+<script src="assets/js/features.js"></script>
+<script src="assets/js/app.js?v=20"></script>
+</body>
+</html>

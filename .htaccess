@@ -1,0 +1,18 @@
+# Shared-hosting fallback. Prefer the supplied Apache virtual-host configuration.
+Options -Indexes
+DirectoryIndex index.html index.php
+<FilesMatch "^(?:\.|_.*\.php$|composer\.(?:json|lock)$|package(?:-lock)?\.json$|env\.template$|.*\.(?:md|ya?ml)$|Dockerfile$|LICENSE$|NOTICE$)">
+    Require all denied
+</FilesMatch>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:vendor|node_modules|bin|tests|docs|deploy|integrations|design|LICENSES)(?:/|$) - [F,L]
+</IfModule>
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set X-Frame-Options "DENY"
+    Header always set Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)"
+</IfModule>
+AddType application/wasm .wasm
+AddType text/javascript .mjs

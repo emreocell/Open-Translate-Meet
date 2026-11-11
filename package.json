@@ -1,0 +1,24 @@
+{
+  "name": "open-translate-meet",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Reproducible browser assets and regression checks; no Node server is required.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/js/*.test.cjs",
+    "test:browser": "node tests/browser-smoke.cjs",
+    "vendor:verify": "node scripts/vendor-assets.mjs --check",
+    "vendor:sync": "node scripts/vendor-assets.mjs --write"
+  },
+  "dependencies": {
+    "@ricky0123/vad-web": "0.0.31",
+    "livekit-client": "2.23.0",
+    "onnxruntime-web": "1.29.0"
+  },
+  "devDependencies": {
+    "playwright": "1.65.0"
+  }
+}

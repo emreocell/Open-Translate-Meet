@@ -1,0 +1,20 @@
+{
+  "name": "emreocell/open-translate-meet",
+  "description": "Self-hosted video meetings with optional live speech translation.",
+  "type": "project",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=8.2",
+    "ext-curl": "*",
+    "ext-fileinfo": "*",
+    "ext-filter": "*",
+    "ext-gd": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-openssl": "*",
+    "ext-session": "*",
+    "phpmailer/phpmailer": "^7.2"
+  },
+  "config": { "allow-plugins": {}, "sort-packages": true, "preferred-install": "dist" },
+  "scripts": { "check-config": "@php bin/check-config.php" }
+}

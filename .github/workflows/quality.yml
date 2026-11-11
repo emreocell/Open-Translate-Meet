@@ -1,0 +1,108 @@
+name: Quality and security
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, fileinfo, gd, mbstring, openssl
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer validate --strict
+      - run: composer install --no-interaction --prefer-dist --no-plugins --no-scripts
+      - run: composer audit
+      - run: npm ci --ignore-scripts
+      - run: npm audit
+      - name: PHP syntax
+        run: rg --files -g '*.php' -g '!vendor/**' -g '!node_modules/**' -0 | xargs -0 -n1 php -l
+      - name: JavaScript syntax
+        run: rg --files assets/js -g '*.js' -g '!livekit-client.umd.js' -0 | xargs -0 -n1 node --check
+      - run: npm run vendor:verify
+      - run: npm test
+      - name: PHP regression tests
+        run: for test in tests/*.php; do php "$test"; done
+      - name: Mocked Google Calendar regression tests
+        run: php tests/bookings.php google
+      - name: Offline first-install regression
+        run: python3 tests/install.py
+      - name: Install local media validators
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends --yes ffmpeg
+      - name: Isolated HTTP integration tests
+        run: python3 tests/integration_backend.py
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Browser regression tests with local provider fixtures
+        run: node tests/browser-smoke.cjs
+      - name: Browser screenshots and results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-results
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 7
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify Gitleaks and scan reachable Git history
+        run: |
+          curl --fail --silent --show-error --location --output /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  /tmp/gitleaks.tar.gz' | sha256sum --check --strict
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks git --redact=100 --no-banner --log-opts=--all .
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --tag auto-translate-meeting:ci .
+      - name: Static server smoke test
+        run: |
+          docker run --detach --name meeting-ci --publish 127.0.0.1:8080:80 auto-translate-meeting:ci
+          trap 'docker logs meeting-ci; docker rm --force meeting-ci' EXIT
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8080/api/config.php > /tmp/config.json; then break; fi
+            sleep 1
+          done
+          python3 -c 'import json; assert json.load(open("/tmp/config.json"))["features"]["translation"] is False'
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8080/api/_config.php)" = 403
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8080/vendor/autoload.php)" = 403

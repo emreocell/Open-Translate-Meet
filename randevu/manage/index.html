@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>Manage meeting · Auto Translate Meeting</title>
+<link rel="icon" href="../../assets/brand/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/css/app.css"><link rel="stylesheet" href="../../assets/css/book.css">
+<script src="../../assets/js/branding.js" defer></script><script src="../../assets/js/book-manage.js" defer></script>
+</head>
+<body class="bkpage">
+<main class="bk manage-page">
+<header class="bk-top"><a class="brand-link" href="../../"><img class="logo" data-brand-logo src="../../assets/brand/mark.svg" alt=""><strong data-app-name>Auto Translate Meeting</strong></a></header>
+<section class="panel glass bk-panel">
+<h1 data-b="b_manage">Manage your meeting</h1><p class="lead" data-b="b_manage_help"></p>
+<p id="manage-error" class="err" role="alert"></p><p id="manage-state" role="status" aria-live="polite"></p>
+<div id="manage-detail" hidden><h2 id="manage-name"></h2><p id="manage-time"></p><p id="manage-notifications"></p><p id="manage-media" role="status"></p>
+<div class="manage-actions"><a id="manage-join" class="go" hidden data-b="b_join"></a><button id="manage-refresh" class="gh" type="button" data-b="b_refresh"></button><button id="manage-copy" class="gh" type="button" data-b="b_copy"></button><button id="manage-cancel" class="gh danger" type="button" data-b="b_cancel"></button></div>
+</div>
+</section>
+<section id="manage-schedule" class="panel glass bk-panel" hidden>
+<h2 data-b="b_reschedule"></h2><p id="manage-timezone" class="fine"></p>
+<div id="manage-days" class="manage-grid" role="group" aria-label="Date"></div>
+<div id="manage-times" class="manage-grid" role="group" aria-label="Time"></div>
+<button id="manage-save" class="go" type="button" data-b="b_save" disabled></button>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+/* Keep document text and its background on one palette when deployment settings
+   resolve. Cross-fading body colors while paragraph variables change immediately
+   creates a low-contrast intermediate frame during the first theme selection. */
+body{overflow:auto;height:auto;min-height:100vh;background:var(--deep);transition:none}
+.privacy-document{width:min(850px,100%);padding:clamp(24px,6vw,64px);margin:auto;line-height:1.7}
+.privacy-document .brand{color:var(--t1);text-decoration:none;margin-bottom:32px}
+.privacy-document h1{font-size:clamp(28px,5vw,44px);line-height:1.15;letter-spacing:-.04em;margin-bottom:20px}
+.privacy-document h2{font-size:21px;margin:0 0 12px;letter-spacing:-.02em}
+.privacy-document section{margin:32px 0}.privacy-document p{margin:12px 0;color:var(--t2)}
+.privacy-document li{margin:8px 0}.privacy-document a{color:var(--accent-text);text-underline-offset:3px}
+.privacy-document footer{display:flex;flex-wrap:wrap;gap:20px;border-top:1px solid var(--edge);padding-top:24px;font-size:13px}
+
+.privacy-header{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+.privacy-header .brand{margin-bottom:0;min-width:0;overflow-wrap:anywhere}
+.privacy-language{display:grid;gap:5px;min-width:150px;max-width:100%;font-size:13px;color:var(--t2)}
+.privacy-language .select{width:100%;min-width:150px;transition:border-color .15s,box-shadow .15s}
+.privacy-contacts{display:flex;flex-wrap:wrap;gap:16px}
+#privacy-status:empty{display:none}
+[dir=rtl] .privacy-document h1,[dir=rtl] .privacy-document h2{letter-spacing:normal}
