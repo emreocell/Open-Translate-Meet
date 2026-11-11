@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-label="Key features">
+  <defs>
+    <clipPath id="c"><rect width="1280" height="560" rx="28"/></clipPath>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="90"/></filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="1280" height="560" fill="#0B0C0E"/>
+    <g filter="url(#blur)">
+      <ellipse cx="160" cy="520" rx="320" ry="170" fill="#343A41" opacity="0.9"/>
+      <ellipse cx="1120" cy="40" rx="330" ry="170" fill="#E9F1F6" opacity="0.22"/>
+      <ellipse cx="660" cy="300" rx="320" ry="120" fill="#262B31" opacity="0.8"/>
+    </g>
+    <rect width="1280" height="560" filter="url(#grain)" opacity="0.55" style="mix-blend-mode:overlay"/>
+    <rect width="1280" height="560" filter="url(#grain)" opacity="0.08"/>
+  </g>
+  <rect x="1" y="1" width="1278" height="558" rx="27" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="2"/>
+
+  <g font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
+    <g id="cards">
+      <!-- row 1 -->
+      <g transform="translate(48 48)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><path d="M38 52v0M43 46v12M48 41v22M53 46v12M58 52v0" stroke="#0E1013" stroke-width="3.5" stroke-linecap="round"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">Live speech translation</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">Speak your language, hear theirs.</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">Optional Gemini Live, with an</text>
+        <text x="32" y="194" font-size="16" fill="#A9B4BE">original-audio fallback.</text></g>
+      <g transform="translate(448 48)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><path d="M38 54v-6a10 10 0 0 1 20 0v6M36 54h24v12H36z" fill="none" stroke="#0E1013" stroke-width="3" stroke-linejoin="round" transform="translate(0 -4)"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">Private by default</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">AI features and transcripts stay off</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">until you enable them, with explicit</text>
+        <text x="32" y="194" font-size="16" fill="#A9B4BE">per-speaker consent.</text></g>
+      <g transform="translate(848 48)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><path d="M48 40l10 4v8c0 7-4 11-10 14-6-3-10-7-10-14v-8z" fill="none" stroke="#0E1013" stroke-width="3" stroke-linejoin="round"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">Host controls</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">Waiting room, server-side moderation,</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">room expiry and permanent closure.</text></g>
+      <!-- row 2 -->
+      <g transform="translate(48 292)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><circle cx="48" cy="52" r="10" fill="none" stroke="#0E1013" stroke-width="3"/><path d="M38 52h20M48 42c-6 6-6 14 0 20M48 42c6 6 6 14 0 20" fill="none" stroke="#0E1013" stroke-width="2.5"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">12 languages</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">Full interface catalogs, including</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">Arabic with right-to-left layout.</text></g>
+      <g transform="translate(448 292)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><rect x="37" y="42" width="22" height="20" rx="4" fill="none" stroke="#0E1013" stroke-width="3"/><path d="M37 49h22M43 39v6M53 39v6" stroke="#0E1013" stroke-width="3" stroke-linecap="round"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">Booking</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">Request, approve and reschedule with</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">a local calendar or Google Calendar.</text></g>
+      <g transform="translate(848 292)"><rect width="384" height="212" rx="20" fill="#FFFFFF" fill-opacity="0.05" stroke="#FFFFFF" stroke-opacity="0.14"/>
+        <circle cx="48" cy="52" r="22" fill="#EEF3F7"/><path d="M42 44l-8 8 8 8M54 44l8 8-8 8" fill="none" stroke="#0E1013" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="32" y="112" font-size="24" font-weight="700" fill="#F2F6F9">Plain PHP and JS</text>
+        <text x="32" y="146" font-size="16" fill="#A9B4BE">No build step, no application database</text>
+        <text x="32" y="170" font-size="16" fill="#A9B4BE">and no WebSocket server to operate.</text></g>
+    </g>
+  </g>
+</svg>

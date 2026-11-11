@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="440" viewBox="0 0 1280 440" role="img" aria-labelledby="t d">
+  <title id="t">Open Translate Meet</title>
+  <desc id="d">Self-hosted video meetings with real-time AI speech translation</desc>
+  <defs>
+    <clipPath id="clip"><rect width="1280" height="440" rx="28"/></clipPath>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="80"/></filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+    </filter>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A0A0C"/><stop offset="1" stop-color="#15181C"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C9D3DC"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="1280" height="440" fill="url(#base)"/>
+    <g filter="url(#blur)">
+      <ellipse cx="1040" cy="90" rx="340" ry="190" fill="#3A4149" opacity="0.95"/>
+      <ellipse cx="1180" cy="400" rx="300" ry="170" fill="#E9F1F6" opacity="0.38"/>
+      <ellipse cx="640" cy="470" rx="380" ry="130" fill="#2B3036" opacity="0.9"/>
+      <ellipse cx="120" cy="40" rx="260" ry="140" fill="#2F353B" opacity="0.8"/>
+      <ellipse cx="900" cy="260" rx="170" ry="90" fill="#F4F8FB" opacity="0.18"/>
+    </g>
+    <rect width="1280" height="440" filter="url(#grain)" opacity="0.55" style="mix-blend-mode:overlay"/>
+    <rect width="1280" height="440" filter="url(#grain)" opacity="0.10"/>
+  </g>
+  <rect x="1" y="1" width="1278" height="438" rx="27" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="2"/>
+
+  <g transform="translate(80 84)">
+    <rect width="64" height="64" rx="19" fill="#EEF3F7"/>
+    <path d="M14 20a6 6 0 0 1 6-6h24a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H31L19 52v-8a6 6 0 0 1-5-6V20Z" fill="#0E1013"/>
+    <path d="M23 24h18M23 32h11" stroke="#EEF3F7" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
+    <text x="80" y="240" font-size="80" font-weight="700" letter-spacing="-2" fill="url(#title)">Open Translate Meet</text>
+    <text x="82" y="292" font-size="26" fill="#AEB9C3">Self-hosted video meetings with real-time AI speech translation.</text>
+    <g font-size="16" font-weight="600" fill="#E6EDF2">
+      <g transform="translate(82 336)"><rect width="128" height="38" rx="19" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.22"/><text x="64" y="25" text-anchor="middle">Apache-2.0</text></g>
+      <g transform="translate(224 336)"><rect width="124" height="38" rx="19" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.22"/><text x="62" y="25" text-anchor="middle">PHP 8.2+</text></g>
+      <g transform="translate(362 336)"><rect width="124" height="38" rx="19" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.22"/><text x="62" y="25" text-anchor="middle">LiveKit</text></g>
+      <g transform="translate(500 336)"><rect width="152" height="38" rx="19" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.22"/><text x="76" y="25" text-anchor="middle">12 languages</text></g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="380" viewBox="0 0 1280 380" role="img" aria-label="Architecture overview">
+  <defs>
+    <clipPath id="c"><rect width="1280" height="380" rx="28"/></clipPath>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="80"/></filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="11" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.55"/></feComponentTransfer>
+    </filter>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C9D3DC"/></marker>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="1280" height="380" fill="#0B0C0E"/>
+    <g filter="url(#blur)">
+      <ellipse cx="640" cy="380" rx="420" ry="130" fill="#343A41" opacity="0.9"/>
+      <ellipse cx="1180" cy="30" rx="260" ry="130" fill="#E9F1F6" opacity="0.2"/>
+      <ellipse cx="100" cy="40" rx="240" ry="120" fill="#2B3036" opacity="0.8"/>
+    </g>
+    <rect width="1280" height="380" filter="url(#grain)" opacity="0.55" style="mix-blend-mode:overlay"/>
+    <rect width="1280" height="380" filter="url(#grain)" opacity="0.08"/>
+  </g>
+  <rect x="1" y="1" width="1278" height="378" rx="27" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="2"/>
+
+  <g font-family="'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif" text-anchor="middle">
+    <!-- Browser -->
+    <rect x="48" y="130" width="240" height="120" rx="20" fill="#EEF3F7"/>
+    <text x="168" y="184" font-size="26" font-weight="700" fill="#0E1013">Browser</text>
+    <text x="168" y="214" font-size="15" fill="#3A4149">meeting UI, VAD, captions</text>
+
+    <!-- PHP -->
+    <rect x="520" y="48" width="240" height="120" rx="20" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.28"/>
+    <text x="640" y="102" font-size="26" font-weight="700" fill="#F2F6F9">PHP application</text>
+    <text x="640" y="132" font-size="15" fill="#AEB9C3">admission, state, admin</text>
+
+    <!-- LiveKit -->
+    <rect x="520" y="212" width="240" height="120" rx="20" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.28"/>
+    <text x="640" y="266" font-size="26" font-weight="700" fill="#F2F6F9">LiveKit</text>
+    <text x="640" y="296" font-size="15" fill="#AEB9C3">audio, video, screen share</text>
+
+    <!-- Providers -->
+    <rect x="992" y="48" width="240" height="120" rx="20" fill="#FFFFFF" fill-opacity="0.04" stroke="#FFFFFF" stroke-opacity="0.2" stroke-dasharray="6 6"/>
+    <text x="1112" y="102" font-size="24" font-weight="700" fill="#F2F6F9">AI providers</text>
+    <text x="1112" y="132" font-size="15" fill="#AEB9C3">optional: translation, text</text>
+
+    <rect x="992" y="212" width="240" height="120" rx="20" fill="#FFFFFF" fill-opacity="0.04" stroke="#FFFFFF" stroke-opacity="0.2" stroke-dasharray="6 6"/>
+    <text x="1112" y="266" font-size="22" font-weight="700" fill="#F2F6F9">Calendar and SMTP</text>
+    <text x="1112" y="296" font-size="15" fill="#AEB9C3">optional: bookings, email</text>
+
+    <!-- Arrows -->
+    <path d="M288 160 L520 112" stroke="#C9D3DC" stroke-width="2.5" fill="none" marker-end="url(#a)" marker-start="url(#a)"/>
+    <path d="M288 220 L520 268" stroke="#C9D3DC" stroke-width="2.5" fill="none" marker-end="url(#a)" marker-start="url(#a)"/>
+    <path d="M760 108 L992 108" stroke="#C9D3DC" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+    <path d="M760 140 C 880 140 880 262 992 262" stroke="#C9D3DC" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+    <path d="M640 168 L640 212" stroke="#C9D3DC" stroke-width="2.5" fill="none" marker-end="url(#a)" marker-start="url(#a)"/>
+    <text x="400" y="118" font-size="14" fill="#AEB9C3" transform="rotate(-11 400 118)">tokens, state</text>
+    <text x="400" y="300" font-size="14" fill="#AEB9C3" transform="rotate(11 400 300)">WebRTC media</text>
+  </g>
+</svg>
