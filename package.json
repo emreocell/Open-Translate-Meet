@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ricky0123/vad-web": "0.0.31",
-    "livekit-client": "2.23.0",
+    "livekit-client": "2.24.1",
     "onnxruntime-web": "1.29.0"
   },
   "devDependencies": {
